@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laptop Request Form</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ─── Screen Styles ─── */
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e2a;
+    --border: #252a38;
+    --accent: #4fffb0;
+    --accent2: #3dd6f5;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --danger: #ff6b6b;
+    --warning: #ffc246;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(78, 255, 176, 0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 80% 80%, rgba(61, 214, 245, 0.05) 0%, transparent 50%);
+  }
+
+  .container { max-width: 760px; margin: 0 auto; animation: fadeUp 0.5s ease both; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .header { text-align: center; margin-bottom: 48px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent);
+    background: rgba(78, 255, 176, 0.08); border: 1px solid rgba(78, 255, 176, 0.2);
+    padding: 5px 12px; border-radius: 100px; margin-bottom: 20px;
+  }
+  .badge::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; color: #fff; }
+  h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .subtitle { margin-top: 12px; color: var(--muted); font-size: 15px; font-weight: 300; }
+
+  .type-toggle {
+    display: grid; grid-template-columns: 1fr 1fr;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 6px; margin-bottom: 32px; gap: 6px;
+  }
+  .type-btn {
+    padding: 14px 20px; border: none; border-radius: 10px; background: transparent;
+    color: var(--muted); font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .type-btn.active { background: var(--surface2); color: var(--text); border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+  .type-btn .icon { font-size: 16px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 28px; margin-bottom: 20px; position: relative; overflow: hidden; animation: fadeUp 0.5s ease both;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(78,255,176,0.3), transparent);
+  }
+
+  .section-title {
+    font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 22px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 580px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 7px; }
+
+  label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+  label .req { color: var(--accent); margin-left: 2px; }
+
+  input, select, textarea {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    color: var(--text); font-family: 'Sora', sans-serif; font-size: 14px;
+    padding: 11px 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%; -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(78, 255, 176, 0.08); }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer;
+  }
+  select option { background: #1a1e2a; }
+  textarea { resize: vertical; min-height: 90px; }
+
+  .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+  .radio-pill input { display: none; }
+  .radio-pill label {
+    display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px;
+    border: 1px solid var(--border); cursor: pointer; font-size: 13px; font-weight: 500;
+    letter-spacing: 0; text-transform: none; color: var(--muted); transition: all 0.18s; background: var(--bg);
+  }
+  .radio-pill input:checked + label { border-color: var(--accent); color: var(--accent); background: rgba(78, 255, 176, 0.07); }
+  .radio-pill.warning input:checked + label { border-color: var(--warning); color: var(--warning); background: rgba(255, 194, 70, 0.07); }
+  .radio-pill.danger input:checked + label { border-color: var(--danger); color: var(--danger); background: rgba(255, 107, 107, 0.07); }
+
+  .spec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 580px) { .spec-grid { grid-template-columns: 1fr 1fr; } }
+  .spec-card input { display: none; }
+  .spec-card label {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px;
+    border-radius: 12px; border: 1px solid var(--border); cursor: pointer; font-size: 13px;
+    font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--text);
+    transition: all 0.18s; background: var(--bg); width: 100%;
+  }
+  .spec-card label .spec-icon { font-size: 20px; margin-bottom: 4px; }
+  .spec-card label .spec-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .spec-card label .spec-desc { font-size: 11px; font-weight: 400; color: var(--muted); letter-spacing: 0; text-transform: none; }
+  .spec-card input:checked + label { border-color: var(--accent2); background: rgba(61, 214, 245, 0.07); box-shadow: 0 0 0 1px var(--accent2); }
+
+  .os-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .os-card input { display: none; }
+  .os-card label {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; padding: 16px 10px; border-radius: 12px; border: 1px solid var(--border);
+    cursor: pointer; font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none;
+    color: var(--muted); transition: all 0.18s; background: var(--bg); text-align: center;
+  }
+  .os-card label .os-icon { font-size: 24px; }
+  .os-card input:checked + label { border-color: var(--accent); color: var(--text); background: rgba(78, 255, 176, 0.07); box-shadow: 0 0 0 1px rgba(78, 255, 176, 0.4); }
+
+  /* Peripherals toggle tiles */
+  .peripherals-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 640px) { .peripherals-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .peri-card input[type="checkbox"] { display: none; }
+  .peri-card label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 14px 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.18s;
+    position: relative;
+    min-height: 84px;
+  }
+  .peri-card label:hover {
+    border-color: var(--muted);
+    background: rgba(255,255,255,0.03);
+  }
+  .peri-card label .peri-icon { font-size: 22px; line-height: 1; }
+  .peri-card label .peri-name {
+    font-size: 11.5px; font-weight: 500; color: var(--muted);
+    letter-spacing: 0; text-transform: none; line-height: 1.3;
+  }
+  /* Tick badge — hidden by default */
+  .peri-card label::after {
+    content: '✓';
+    position: absolute;
+    top: 7px; right: 9px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #0d0f14;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.18s, transform 0.18s;
+  }
+  /* Checked state */
+  .peri-card input:checked + label {
+    border-color: var(--accent);
+    background: rgba(78, 255, 176, 0.07);
+    box-shadow: 0 0 0 1px rgba(78, 255, 176, 0.4);
+  }
+  .peri-card input:checked + label .peri-name { color: var(--accent); }
+  .peri-card input:checked + label::after {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .submit-area { margin-top: 8px; display: flex; gap: 12px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+
+  .btn-reset {
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: 13px 24px; border-radius: 10px; font-family: 'Sora', sans-serif;
+    font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.18s;
+  }
+  .btn-reset:hover { border-color: var(--muted); color: var(--text); }
+
+  .btn-submit {
+    background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; color: #0d0f14;
+    padding: 13px 32px; border-radius: 10px; font-family: 'Sora', sans-serif; font-size: 14px;
+    font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center;
+    gap: 8px; letter-spacing: 0.02em;
+  }
+  .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(78, 255, 176, 0.3); }
+  .btn-submit:active { transform: translateY(0); }
+
+  /* PDF view: hidden on screen */
+  #pdf-view { display: none; }
+
+  /* ─── Print / PDF Styles ─── */
+  @media print {
+    @page { size: A4; margin: 18mm 16mm; }
+
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    body {
+      background: #fff !important;
+      background-image: none !important;
+      color: #111 !important;
+      padding: 0 !important;
+      font-family: 'Sora', Arial, sans-serif !important;
+    }
+
+    .header, #form-wrap { display: none !important; }
+    #pdf-view { display: block !important; }
+    .container { max-width: 100% !important; animation: none !important; }
+
+    /* ── PDF Layout ── */
+    .pdf-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding-bottom: 14px; border-bottom: 3px solid #111; margin-bottom: 20px;
+    }
+    .pdf-header-left h2 { font-size: 21px; font-weight: 700; color: #111; letter-spacing: -0.02em; margin-bottom: 3px; }
+    .pdf-header-left p { font-size: 11px; color: #777; }
+    .pdf-header-right { text-align: right; }
+    .pdf-ticket {
+      display: inline-block; font-family: 'DM Mono', monospace; font-size: 13px;
+      background: #f0fdf8; border: 1px solid #6ee7b7; color: #065f46;
+      padding: 5px 13px; border-radius: 6px; font-weight: 500; letter-spacing: 0.06em;
+    }
+    .pdf-date { font-size: 10px; color: #999; margin-top: 5px; }
+
+    .pdf-type-badge {
+      display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 4px 13px; border-radius: 100px; margin-bottom: 16px;
+    }
+    .pdf-type-badge.new { background: #f0fdf8; color: #065f46; border: 1px solid #6ee7b7; }
+    .pdf-type-badge.change { background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; }
+
+    .pdf-section { margin-bottom: 16px; break-inside: avoid; }
+    .pdf-section-title {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #999; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px; margin-bottom: 10px;
+    }
+
+    .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 28px; }
+    .pdf-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px 20px; }
+
+    .pdf-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 2px; }
+    .pdf-value { font-size: 13px; color: #111; font-weight: 500; line-height: 1.3; }
+    .pdf-value.empty { color: #d1d5db; font-weight: 400; font-style: italic; }
+
+    .pdf-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pdf-chip {
+      font-size: 11px; padding: 3px 10px; border-radius: 100px;
+      border: 1px solid #e5e7eb; color: #9ca3af; background: #f9fafb;
+    }
+    .pdf-chip.yes { background: #f0fdf8; border-color: #6ee7b7; color: #065f46; }
+
+    .pdf-priority {
+      display: inline-block; padding: 3px 13px; border-radius: 100px; font-size: 12px; font-weight: 600;
+    }
+    .pdf-priority.low    { background: #f0fdf8; color: #065f46; border: 1px solid #6ee7b7; }
+    .pdf-priority.standard { background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; }
+    .pdf-priority.high   { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
+    .pdf-priority.critical { background: #fff1f2; color: #9f1239; border: 1px solid #fda4af; }
+
+    .pdf-notes-box {
+      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px;
+      padding: 10px 14px; font-size: 12px; color: #374151; line-height: 1.55; min-height: 44px;
+    }
+
+    .pdf-sig-section {
+      margin-top: 26px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; break-inside: avoid;
+    }
+    .pdf-sig-line { border-bottom: 1px solid #9ca3af; height: 40px; margin-bottom: 5px; }
+    .pdf-sig-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; }
+
+    .pdf-footer {
+      margin-top: 24px; padding-top: 8px; border-top: 1px solid #e5e7eb;
+      display: flex; justify-content: space-between; font-size: 9px; color: #c4c4c4;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="badge">IT Equipment Portal</div>
+    <h1>Laptop <span>Request</span> Form</h1>
+    <p class="subtitle">Submit a request for a new device or a hardware change</p>
+  </div>
+
+  <div id="form-wrap">
+
+    <!-- Request Type Toggle -->
+    <div class="type-toggle">
+      <button class="type-btn active" id="btn-new" onclick="switchType('new')">
+        <span class="icon">🖥️</span> New Hire Request
+      </button>
+      <button class="type-btn" id="btn-change" onclick="switchType('change')">
+        <span class="icon">🔄</span> Laptop Change Request
+      </button>
+    </div>
+
+    <!-- Requester Info -->
+    <div class="card" style="animation-delay:0.05s">
+      <div class="section-title">Requester Info</div>
+      <div class="grid-2" style="gap:16px; margin-bottom:16px;">
+        <div class="field">
+          <label>Full Name <span class="req">*</span></label>
+          <input type="text" id="full-name" placeholder="Jane Doe">
+        </div>
+        <div class="field">
+          <label>Employee ID</label>
+          <input type="text" id="emp-id" placeholder="EMP-00123">
+        </div>
+      </div>
+      <div class="grid-2" style="gap:16px; margin-bottom:16px;">
+        <div class="field">
+          <label>Work Email <span class="req">*</span></label>
+          <input type="email" id="email" placeholder="jane@company.com">
+        </div>
+        <div class="field">
+          <label>Department <span class="req">*</span></label>
+          <select id="department">
+            <option value="">Select department…</option>
+            <option>Engineering / Development</option>
+            <option>Design &amp; Creative</option>
+            <option>Sales &amp; Business Dev</option>
+            <option>Marketing</option>
+            <option>Finance &amp; Accounting</option>
+            <option>HR &amp; People Ops</option>
+            <option>Operations</option>
+            <option>Customer Support</option>
+            <option>Legal &amp; Compliance</option>
+            <option>Executive / Leadership</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2" style="gap:16px;">
+        <div class="field">
+          <label>Manager / Approver <span class="req">*</span></label>
+          <input type="text" id="manager" placeholder="John Smith">
+        </div>
+        <div class="field">
+          <label>Manager Email <span class="req">*</span></label>
+          <input type="email" id="manager-email" placeholder="john@company.com">
+        </div>
+      </div>
+    </div>
+
+    <!-- New Hire Section -->
+    <div class="card" id="new-hire-section" style="animation-delay:0.1s">
+      <div class="section-title">New Hire Details</div>
+      <div class="grid-2" style="gap:16px; margin-bottom:16px;">
+        <div class="field">
+          <label>Start Date <span class="req">*</span></label>
+          <input type="date" id="start-date">
+        </div>
+        <div class="field">
+          <label>Job Title / Role <span class="req">*</span></label>
+          <input type="text" id="job-title" placeholder="Senior Frontend Developer">
+        </div>
+      </div>
+      <div class="field">
+        <label>Work Location <span class="req">*</span></label>
+        <select id="work-location">
+          <option value="">Select…</option>
+          <option>Office – HQ</option>
+          <option>Office – Branch</option>
+          <option>Remote – Full-time</option>
+          <option>Hybrid</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Change Request Section -->
+    <div class="card" id="upgrade-section" style="animation-delay:0.1s">
+      <div class="section-title">Current Laptop Info</div>
+      <div class="grid-3" style="margin-bottom:16px;">
+        <div class="field">
+          <label>Asset Tag</label>
+          <input type="text" id="asset-tag" placeholder="IT-2024-0041">
+        </div>
+        <div class="field">
+          <label>Current Model</label>
+          <input type="text" id="current-model" placeholder="MacBook Pro 14 2022">
+        </div>
+        <div class="field">
+          <label>Age of Device</label>
+          <select id="device-age">
+            <option value="">Select…</option>
+            <option>Less than 1 year</option>
+            <option>1–2 years</option>
+            <option>2–3 years</option>
+            <option>3–4 years</option>
+            <option>4+ years</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Reason for Change <span class="req">*</span></label>
+        <textarea id="change-reason" placeholder="Describe the reason for requesting a laptop change…" style="min-height:80px;"></textarea>
+      </div>
+    </div>
+
+    <!-- Laptop Specs -->
+    <div class="card" style="animation-delay:0.15s">
+      <div class="section-title">Preferred Specifications</div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block;margin-bottom:10px;">Operating System <span class="req">*</span></label>
+        <div class="os-grid">
+          <div class="os-card">
+            <input type="radio" name="os" id="os-mac" value="macOS">
+            <label for="os-mac"><span class="os-icon">🍎</span>macOS</label>
+          </div>
+          <div class="os-card">
+            <input type="radio" name="os" id="os-win" value="Windows" checked>
+            <label for="os-win"><span class="os-icon">🪟</span>Windows</label>
+          </div>
+          <div class="os-card">
+            <input type="radio" name="os" id="os-linux" value="Linux">
+            <label for="os-linux"><span class="os-icon">🐧</span>Linux</label>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block;margin-bottom:10px;">Performance Tier <span class="req">*</span></label>
+        <div class="spec-grid">
+          <div class="spec-card">
+            <input type="radio" name="perf" id="perf-std" value="Standard" checked>
+            <label for="perf-std">
+              <span class="spec-icon">💼</span>
+              <span class="spec-name">Standard</span>
+              <span class="spec-desc">Office tasks, email, docs</span>
+            </label>
+          </div>
+          <div class="spec-card">
+            <input type="radio" name="perf" id="perf-pro" value="Professional">
+            <label for="perf-pro">
+              <span class="spec-icon">⚡</span>
+              <span class="spec-name">Professional</span>
+              <span class="spec-desc">Dev, data, design work</span>
+            </label>
+          </div>
+          <div class="spec-card">
+            <input type="radio" name="perf" id="perf-high" value="High Performance">
+            <label for="perf-high">
+              <span class="spec-icon">🚀</span>
+              <span class="spec-name">High Performance</span>
+              <span class="spec-desc">ML, video, 3D, heavy compute</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="field">
+          <label>Screen Size</label>
+          <select id="screen-size">
+            <option>13"</option><option>14"</option><option selected>15"</option>
+            <option>16"</option><option>17"</option><option>No preference</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>RAM</label>
+          <select id="ram">
+            <option>8 GB</option><option selected>16 GB</option>
+            <option>32 GB</option><option>64 GB</option><option>No preference</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Storage</label>
+          <select id="storage">
+            <option>256 GB SSD</option><option selected>512 GB SSD</option>
+            <option>1 TB SSD</option><option>2 TB SSD</option><option>No preference</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Peripherals -->
+    <div class="card" style="animation-delay:0.2s">
+      <div class="section-title">Peripherals &amp; Accessories</div>
+      <div class="peripherals-grid">
+
+        <div class="peri-card">
+          <input type="checkbox" id="ext-monitor">
+          <label for="ext-monitor">
+            <span class="peri-icon">🖥️</span>
+            <span class="peri-name">External Monitor</span>
+          </label>
+        </div>
+
+        <div class="peri-card">
+          <input type="checkbox" id="keyboard">
+          <label for="keyboard">
+            <span class="peri-icon">⌨️</span>
+            <span class="peri-name">External Keyboard</span>
+          </label>
+        </div>
+
+        <div class="peri-card">
+          <input type="checkbox" id="mouse">
+          <label for="mouse">
+            <span class="peri-icon">🖱️</span>
+            <span class="peri-name">Mouse / Trackpad</span>
+          </label>
+        </div>
+
+        <div class="peri-card">
+          <input type="checkbox" id="docking">
+          <label for="docking">
+            <span class="peri-icon">🔌</span>
+            <span class="peri-name">Docking Station / Hub</span>
+          </label>
+        </div>
+
+        <div class="peri-card">
+          <input type="checkbox" id="headset">
+          <label for="headset">
+            <span class="peri-icon">🎧</span>
+            <span class="peri-name">Headset / Headphones</span>
+          </label>
+        </div>
+
+        <div class="peri-card">
+          <input type="checkbox" id="webcam">
+          <label for="webcam">
+            <span class="peri-icon">📷</span>
+            <span class="peri-name">External Webcam</span>
+          </label>
+        </div>
+
+        <div class="peri-card">
+          <input type="checkbox" id="bag">
+          <label for="bag">
+            <span class="peri-icon">🎒</span>
+            <span class="peri-name">Laptop Bag / Sleeve</span>
+          </label>
+        </div>
+
+        <div class="peri-card">
+          <input type="checkbox" id="charger-extra">
+          <label for="charger-extra">
+            <span class="peri-icon">🔋</span>
+            <span class="peri-name">Extra Charger / Adapter</span>
+          </label>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Urgency -->
+    <div class="card" style="animation-delay:0.25s">
+      <div class="section-title">Urgency &amp; Additional Notes</div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block;margin-bottom:10px;">Priority Level <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-pill">
+            <input type="radio" name="urgency" id="urg-low" value="Low">
+            <label for="urg-low">🟢 Low – Flexible</label>
+          </div>
+          <div class="radio-pill">
+            <input type="radio" name="urgency" id="urg-std" value="Standard" checked>
+            <label for="urg-std">🔵 Standard – Within 5 days</label>
+          </div>
+          <div class="radio-pill warning">
+            <input type="radio" name="urgency" id="urg-high" value="High">
+            <label for="urg-high">🟡 High – Within 2 days</label>
+          </div>
+          <div class="radio-pill danger">
+            <input type="radio" name="urgency" id="urg-crit" value="Critical">
+            <label for="urg-crit">🔴 Critical – ASAP</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Needed By Date</label>
+        <input type="date" id="needed-by">
+      </div>
+      <div class="field" style="margin-top:16px;">
+        <label>Additional Notes / Special Requirements</label>
+        <textarea id="notes" placeholder="Any software pre-installations, accessibility requirements, justification for high-end specs, or other details…"></textarea>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-area">
+      <button class="btn-reset" onclick="resetForm()">Clear Form</button>
+      <button class="btn-submit" onclick="submitForm()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M5 14l7 7 7-7"/><path d="M3 19h18"/></svg>
+        Save as PDF
+      </button>
+    </div>
+  </div><!-- /form-wrap -->
+
+  <!-- PDF-only output (hidden on screen, shown during print) -->
+  <div id="pdf-view"></div>
+
+</div><!-- /container -->
+
+<script>
+  let currentType = 'new';
+
+  function switchType(type) {
+    currentType = type;
+    const isNew = type === 'new';
+    document.getElementById('btn-new').classList.toggle('active', isNew);
+    document.getElementById('btn-change').classList.toggle('active', !isNew);
+    document.getElementById('new-hire-section').style.display = isNew ? '' : 'none';
+    document.getElementById('upgrade-section').style.display = isNew ? 'none' : '';
+    if (isNew) document.getElementById('change-reason').value = '';
+    else document.getElementById('start-date').value = '';
+  }
+
+  function resetForm() {
+    document.querySelectorAll('input[type="text"], input[type="email"], input[type="date"], select, textarea')
+      .forEach(el => el.value = '');
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+    document.getElementById('os-win').checked = true;
+    document.getElementById('perf-std').checked = true;
+    document.getElementById('urg-std').checked = true;
+  }
+
+  function gv(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function cb(id) {
+    const el = document.getElementById(id);
+    return el && el.checked;
+  }
+
+  function fmtDate(d) {
+    if (!d) return '';
+    const parts = d.split('-');
+    if (parts.length !== 3) return d;
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return months[+parts[1]-1] + ' ' + +parts[2] + ', ' + parts[0];
+  }
+
+  function field(label, value) {
+    const empty = !value;
+    return `<div>
+      <div class="pdf-label">${label}</div>
+      <div class="pdf-value${empty ? ' empty' : ''}">${value || '—'}</div>
+    </div>`;
+  }
+
+  function buildPDFContent() {
+    const isNew = currentType === 'new';
+    const ticketNum = 'LPT-' + Math.floor(100000 + Math.random() * 900000);
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+
+    const os = (document.querySelector('input[name="os"]:checked') || {}).value || '';
+    const perf = (document.querySelector('input[name="perf"]:checked') || {}).value || '';
+    const urgency = (document.querySelector('input[name="urgency"]:checked') || {}).value || 'Standard';
+    const urgMap = { Low:'low', Standard:'standard', High:'high', Critical:'critical' };
+    const urgEmoji = { Low:'🟢 Low – Flexible', Standard:'🔵 Standard – Within 5 days', High:'🟡 High – Within 2 days', Critical:'🔴 Critical – ASAP' };
+
+    const peripheralList = [
+      ['ext-monitor','External Monitor'],
+      ['keyboard','External Keyboard'],
+      ['mouse','External Mouse / Trackpad'],
+      ['docking','Docking Station / Hub'],
+      ['headset','Headset / Headphones'],
+      ['webcam','External Webcam'],
+      ['bag','Laptop Bag / Sleeve'],
+      ['charger-extra','Extra Charger / Power Adapter'],
+    ];
+
+    const chipHtml = peripheralList.map(([id, label]) => {
+      const yes = cb(id);
+      return `<span class="pdf-chip${yes ? ' yes' : ''}">${yes ? '✓' : '○'} ${label}</span>`;
+    }).join('');
+
+    const specificSection = isNew ? `
+      <div class="pdf-section">
+        <div class="pdf-section-title">New Hire Details</div>
+        <div class="pdf-grid">
+          ${field('Start Date', fmtDate(gv('start-date')))}
+          ${field('Job Title / Role', gv('job-title'))}
+          ${field('Work Location', gv('work-location'))}
+        </div>
+      </div>
+    ` : `
+      <div class="pdf-section">
+        <div class="pdf-section-title">Current Laptop Information</div>
+        <div class="pdf-grid-3">
+          ${field('Asset Tag', gv('asset-tag'))}
+          ${field('Current Model', gv('current-model'))}
+          ${field('Device Age', gv('device-age'))}
+        </div>
+        <div style="margin-top:10px;">${field('Reason for Change', gv('change-reason'))}</div>
+      </div>
+    `;
+
+    const notes = gv('notes');
+
+    return `
+      <div class="pdf-header">
+        <div class="pdf-header-left">
+          <h2>Laptop Request Form</h2>
+          <p>IT Equipment Portal &mdash; Internal Use Only</p>
+        </div>
+        <div class="pdf-header-right">
+          <div class="pdf-ticket">${ticketNum}</div>
+          <div class="pdf-date">Submitted: ${dateStr} at ${timeStr}</div>
+        </div>
+      </div>
+
+      <div class="pdf-type-badge ${isNew ? 'new' : 'change'}">
+        ${isNew ? '🖥️ New Hire Request' : '🔄 Laptop Change Request'}
+      </div>
+
+      <div class="pdf-section">
+        <div class="pdf-section-title">Requester Information</div>
+        <div class="pdf-grid">
+          ${field('Full Name', gv('full-name'))}
+          ${field('Employee ID', gv('emp-id'))}
+          ${field('Work Email', gv('email'))}
+          ${field('Department', gv('department'))}
+          ${field('Manager / Approver', gv('manager'))}
+          ${field('Manager Email', gv('manager-email'))}
+        </div>
+      </div>
+
+      ${specificSection}
+
+      <div class="pdf-section">
+        <div class="pdf-section-title">Preferred Specifications</div>
+        <div class="pdf-grid-3">
+          ${field('Operating System', os)}
+          ${field('Performance Tier', perf)}
+          ${field('Screen Size', gv('screen-size'))}
+          ${field('RAM', gv('ram'))}
+          ${field('Storage', gv('storage'))}
+        </div>
+      </div>
+
+      <div class="pdf-section">
+        <div class="pdf-section-title">Peripherals &amp; Accessories</div>
+        <div class="pdf-chips">${chipHtml}</div>
+      </div>
+
+      <div class="pdf-section">
+        <div class="pdf-section-title">Urgency &amp; Timeline</div>
+        <div class="pdf-grid">
+          <div>
+            <div class="pdf-label">Priority Level</div>
+            <div style="margin-top:4px;">
+              <span class="pdf-priority ${urgMap[urgency] || 'standard'}">${urgEmoji[urgency] || urgency}</span>
+            </div>
+          </div>
+          ${field('Needed By Date', fmtDate(gv('needed-by')))}
+        </div>
+      </div>
+
+      <div class="pdf-section">
+        <div class="pdf-section-title">Additional Notes / Special Requirements</div>
+        <div class="pdf-notes-box">${notes || '<span style="color:#d1d5db;font-style:italic;">No additional notes provided.</span>'}</div>
+      </div>
+
+      <div class="pdf-sig-section">
+        <div>
+          <div class="pdf-sig-line"></div>
+          <div class="pdf-sig-label">Requester Signature &amp; Date</div>
+        </div>
+        <div>
+          <div class="pdf-sig-line"></div>
+          <div class="pdf-sig-label">Manager / Approver Signature &amp; Date</div>
+        </div>
+        <div>
+          <div class="pdf-sig-line"></div>
+          <div class="pdf-sig-label">IT Department Signature &amp; Date</div>
+        </div>
+      </div>
+
+      <div class="pdf-footer">
+        <span>IT Equipment Request &mdash; Confidential Internal Document</span>
+        <span>${ticketNum} &bull; ${dateStr}</span>
+      </div>
+    `;
+  }
+
+  function submitForm() {
+    const name = gv('full-name');
+    const email = gv('email');
+    const dept = gv('department');
+    const mgr = gv('manager');
+    const mgrEmail = gv('manager-email');
+
+    if (!name || !email || !dept || !mgr || !mgrEmail) {
+      alert('Please fill in all required fields (marked with *).');
+      return;
+    }
+    const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRx.test(email) || !emailRx.test(mgrEmail)) {
+      alert('Please enter valid email addresses.');
+      return;
+    }
+
+    // Inject clean PDF content and trigger print dialog
+    document.getElementById('pdf-view').innerHTML = buildPDFContent();
+    setTimeout(() => window.print(), 100);
+  }
+
+  // Init
+  switchType('new');
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('start-date').setAttribute('min', today);
+  document.getElementById('needed-by').setAttribute('min', today);
+</script>
+</body>
+</html>
